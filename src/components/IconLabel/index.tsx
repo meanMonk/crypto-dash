@@ -1,7 +1,8 @@
+import { useAppSelector } from 'app/hooks'
 import { Column, Row } from 'components/Global'
 import { Title, SubTitle } from 'components/Text'
 import React, { ReactNode } from 'react'
-import { Coin } from 'reedux/slices/coin.slice'
+import { Coin, selectCoinDetail } from 'reedux/slices/coin.slice'
 import styled from 'styled-components'
 interface Props {
   iconImage: string
@@ -21,6 +22,8 @@ const IconLabelStyle = styled(Row)`
   width: calc(100% - 21px);
   img {
     margin-top: 4px;
+    height: 12px;
+    width: 12px;
   }
 
   cursor: pointer;
@@ -43,6 +46,11 @@ const IconLabel = ({
   symbol,
   onSelect
 }: Props) => {
+  
+  const coinDetail = useAppSelector(selectCoinDetail);
+  
+  const imgUrl = coinDetail && coinDetail?.id === id ? coinDetail?.image?.large : iconImage;
+
   return (
     <IconLabelStyle
       onClick={() => onSelect({
@@ -52,7 +60,7 @@ const IconLabel = ({
       })}
       className={currentId === id ? 'active' : ''}>
       <Column>
-        <img src={iconImage} alt={`${symbol}-img`} />
+        <img src={imgUrl} alt={`${symbol}-img`} />
       </Column>
       <Column>
         <Title weight={500}>{name}</Title>

@@ -4,8 +4,8 @@ import Card from 'components/Card';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import Sidebar from './sidebar';
-import { useAppDispatch } from 'app/hooks';
-import { fetchCoinAsync } from 'reedux/slices/coin.slice';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { Coin, fetchCoinsAsync, selectActiveCoin } from 'reedux/slices/coin.slice';
 
 
 const Page = styled.div`
@@ -50,22 +50,28 @@ const PageTitle = styled.div`
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch()
 
+  const activeCoin: Coin | null = useAppSelector(selectActiveCoin)
+
   useEffect(() => {
-    dispatch(fetchCoinAsync());
+    dispatch(fetchCoinsAsync());
   }, [dispatch])
 
   return (
     <Page>
-      <Sidebar />
+      <Sidebar activeCoin={activeCoin} />
       <PageContent>
         <PageTitle>
           <img src={coinImage} alt="coin" />
           <Heading>My Cryptos</Heading>
         </PageTitle>
         <CryptoList>
-          {
-            [1, 2, 4, 4, 5, 6].map((i) => (
-              <Card key={i}></Card>
+          { activeCoin && [activeCoin].map((coin) => (
+              <Card
+                key={coin?.id}
+                id={coin?.id}
+                name={coin?.name}
+                symbol={coin?.symbol}
+              ></Card>
             ))
           }
         </CryptoList>

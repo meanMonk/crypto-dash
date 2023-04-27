@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import IconLabel from 'components/IconLabel';
 import styled from 'styled-components';
-import coinImage from 'assets/coin.png'
+import cointemplate from 'assets/cointemplate.svg'
 import debouce from 'lodash.debounce'
 import { Column, Input, Line, SubHeading } from 'components';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { Coin, selectActiveCoin, selectCoin, selectCoinList } from 'reedux/slices/coin.slice';
+import { Coin, fetchCoinDetailAsync, selectCoin, selectCoinList } from 'reedux/slices/coin.slice';
 
 interface Props {
-
+  activeCoin: Coin | null
 }
 
 const SidebarStyle = styled.div`
@@ -36,31 +36,37 @@ const SidebarContent = styled.div`
   }
 `
 
-const Sidebar = (props: Props) => {
+const Sidebar = ({
+  activeCoin
+}: Props) => {
 
   let coinList = useAppSelector(selectCoinList)
-  const activeCoin: Coin | null = useAppSelector(selectActiveCoin)
   const dispatch = useAppDispatch();
 
   const [searchTerm, setsearchTerm] = useState('');
-  
+
   if (searchTerm !== '') {
-    coinList = coinList.filter(({symbol, name}) => name.toLowerCase().includes(searchTerm.toLowerCase()))
+    coinList = coinList.filter(({ symbol, name }) => name.toLowerCase().startsWith(searchTerm.toLowerCase()))
   }
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setsearchTerm(e.target.value);
   };
-  
+
   const debouncedOnChange = useMemo(() => {
     return debouce(handleChange, 300);
   }, []);
-  
+
   useEffect(() => {
     return () => {
       debouncedOnChange.cancel();
     };
   });
+  
+  const onSelectCoin = async (coin: any) => {
+    dispatch(selectCoin(coin))
+    await dispatch(fetchCoinDetailAsync(coin.id))
+  }
 
   return (
     <SidebarStyle>
@@ -77,12 +83,12 @@ const Sidebar = (props: Props) => {
           {(coinList || []).map(({ symbol, name, id }) => (
             <React.Fragment key={id}>
               <IconLabel
-                iconImage={coinImage}
+                iconImage={cointemplate}
                 name={name}
                 currentId={activeCoin?.id}
                 id={id}
                 symbol={symbol}
-                onSelect={(coin: any) => dispatch(selectCoin(coin))}
+                onSelect={onSelectCoin}
               />
               <Line className='diver' />
             </React.Fragment>

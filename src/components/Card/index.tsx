@@ -8,14 +8,18 @@ import {
   Small, SubHeading, SubTitle, Title,
   Media, Content, Column, Line, Row, Icon
 } from 'components';
+import { useAppSelector } from 'app/hooks';
+import { selectCoinDetail } from 'reedux/slices/coin.slice';
 interface Props {
-
+  id: string | undefined
+  name: string | undefined
+  symbol: string | undefined
 }
 
 const CardContainer = styled.div`
   box-sizing: border-box;
   min-width: 301px;
-  height: 213px;
+  min-height: 213px;
   background: ${props => props.theme.colors.gray25};
   border: 1px solid ${props => props.theme.colors.background};
   border-radius: 4.5561px;
@@ -35,39 +39,49 @@ const Indicator = styled('span') <{ up?: boolean }>`
   background-image: url(${({ up }) => up ? arrowUp : arrowDown});
 `
 
-const Card = (props: Props) => {
+const Card = ({
+  id,
+  name,
+  symbol
+}: Props) => {
+
+  const detail = useAppSelector(selectCoinDetail);
+
+  const { market_data } = detail || {};
+
+  const up = market_data?.price_change_percentage_24h_in_currency?.usd > 0;
 
   return (
     <CardContainer>
       <Media>
-        <Icon src={coinImage} />
+        <Icon src={detail?.image?.large || coinImage} />
       </Media>
       <Content>
         <Column>
-          <Title>Bitcoin</Title>
-          <SubTitle uppercase={true} color="helpText">BTC</SubTitle>
+          <Title>{name}</Title>
+          <SubTitle uppercase={true} color="helpText">{symbol}</SubTitle>
         </Column>
         <Column>
           <SubHeading color="danger">
-            2280.66 {' '}
-            <Small color="danger" weight={600}>(5.19%)</Small>
+            {market_data?.current_price?.usd} {' '}
+            <Small color="danger" weight={600}>({parseFloat(market_data?.price_change_percentage_24h_in_currency?.usd).toFixed(2)}%)</Small>
             {' '}
-            <Indicator up={true} />
+            <Indicator up={up} />
           </SubHeading>
           <SubTitle uppercase={true} color="secondary">Change</SubTitle>
         </Column>
         <Line />
-        <Row>
+        <Column>
           <Column>
-            <Title>4324.75</Title>
-            <Small color="helpText">Buy</Small>
+            <Small color="helpText">Circulating Supply</Small>
+            <Title>{market_data?.max_supply}</Title>
           </Column>
-          <Line horizontal={false} />
+          <Line />
           <Column>
-            <Title>4324.75</Title>
-            <Small color="helpText">Sell</Small>
+            <Small color="helpText">Total Supply</Small>
+            <Title>{market_data?.total_supply}</Title>
           </Column>
-        </Row>
+        </Column>
       </Content>
     </CardContainer>
   )
