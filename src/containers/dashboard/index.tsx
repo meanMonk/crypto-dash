@@ -1,9 +1,11 @@
 import coinImage from 'assets/coin.png';
 import { Heading } from 'components';
 import Card from 'components/Card';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import Sidebar from './sidebar';
+import { useAppDispatch } from 'app/hooks';
+import { fetchCoinAsync } from 'reedux/slices/coin.slice';
 
 
 const Page = styled.div`
@@ -46,12 +48,18 @@ const PageTitle = styled.div`
 `
 
 const Dashboard: React.FC = () => {
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    dispatch(fetchCoinAsync());
+  }, [dispatch])
+
   return (
     <Page>
       <Sidebar />
       <PageContent>
         <PageTitle>
-          <img src={coinImage} alt="coin" /> 
+          <img src={coinImage} alt="coin" />
           <Heading>My Cryptos</Heading>
         </PageTitle>
         <CryptoList>

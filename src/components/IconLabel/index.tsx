@@ -1,14 +1,17 @@
 import { Column, Row } from 'components/Global'
 import { Title, SubTitle } from 'components/Text'
 import React, { ReactNode } from 'react'
+import { Coin } from 'reedux/slices/coin.slice'
 import styled from 'styled-components'
-
 interface Props {
   iconImage: string
-  label: string
+  id: string
+  currentId?: string
+  name: string
   symbol: string
   selected?: boolean
   children?: ReactNode
+  onSelect: (a: Coin) => void
 }
 
 const IconLabelStyle = styled(Row)`
@@ -34,22 +37,28 @@ const IconLabelStyle = styled(Row)`
 const IconLabel = ({
   children,
   iconImage,
-  label,
+  id,
+  currentId,
+  name,
   symbol,
-  selected = false
+  onSelect
 }: Props) => {
   return (
-    <>
-      <IconLabelStyle className={selected ? 'active' : ''}>
-        <Column>
-          <img src={iconImage} alt={`${symbol}-img`} />
-        </Column>
-        <Column>
-          <Title weight={500}>{label}</Title>
-          <SubTitle uppercase={true} color="helpText">{symbol}</SubTitle>
-        </Column>
-      </IconLabelStyle>
-    </>
+    <IconLabelStyle
+      onClick={() => onSelect({
+        name,
+        symbol,
+        id
+      })}
+      className={currentId === id ? 'active' : ''}>
+      <Column>
+        <img src={iconImage} alt={`${symbol}-img`} />
+      </Column>
+      <Column>
+        <Title weight={500}>{name}</Title>
+        <SubTitle uppercase={true} color="helpText">{symbol}</SubTitle>
+      </Column>
+    </IconLabelStyle>
   )
 }
 

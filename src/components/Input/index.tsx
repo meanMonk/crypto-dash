@@ -6,11 +6,13 @@ interface Props {
   placeHolder?: string;
   type?: string;
   value?: string | number;
-  onChange?: (e: unknown) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputStyle = styled('input')`
   border: 1px solid #D1D5DA;
+  width: 100%;
+  box-sizing: border-box;
   font-weight: 400;
   font-size: 12px;
   line-height: 18px;
