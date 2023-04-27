@@ -2,7 +2,7 @@ import React from 'react'
 import IconLabel from 'components/IconLabel';
 import styled from 'styled-components';
 import coinImage from 'assets/coin.png'
-import { Column, Input, Line, SubHeading, SubTitle } from 'components';
+import { Column, Input, Line, SubHeading } from 'components';
 
 interface Props {
   

@@ -23,7 +23,7 @@ const IconStyle = styled('div')`
 export const Icon = ({ src }: Props) => {
   return (
     <IconStyle>
-      <img src={src} />
+      <img src={src} alt="icon"/>
     </IconStyle>
   )
 }
