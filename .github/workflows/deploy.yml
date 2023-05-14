@@ -1,24 +1,26 @@
-name: "Release gateway"
+name: Deploy to s3
 
-on:
+on: 
   pull_request:
-  
+
+env: 
+  STAGING_BUCKET_NAME: ${{ secrets.STAGING_BUCKET_NAME }}
+
 jobs: 
-  deploy:
-    name: Deploy to staging
+  build:
+    name: 'Prepare build and push to s3'
     runs-on: ubuntu-latest
-    steps: 
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.8.0
-        with:
-          access_token: ${{ github.token }}
+    
+    steps:  
       - name: Checkout 
         uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          node-version: '16.x'
-      - name: Install Dependencies
-        run: yarn install --frozen-lockfile --legacy-peer-deps
-      - name: Prepare build
-        run: yarn run build 
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Build React App
+        run: yarn install && yarn run build
+      - name: Deploy app build to s3 bucket
+        run: aws s3 sync ./build/ s3://${{ env.STAGING_BUCKET_NAME }} --delete
