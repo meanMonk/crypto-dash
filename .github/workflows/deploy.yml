@@ -1,34 +1,62 @@
-name: "Eslint check"
-
-# Run on new pull request.
+name: "Release gateway"
 
 on:
   pull_request:
-
-jobs:
-  test:
+  
+jobs: 
+  deploy:
+    name: Deploy to staging
     runs-on: ubuntu-latest
-    steps:
+    steps: 
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
         with:
           access_token: ${{ github.token }}
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - name: Checkout 
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
-      - name: Yarn cache
-        uses: actions/cache@v2
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: Yarn install
-        run: |
-          mkdir .yarncache
-          yarn install --cache-folder ./.yarncache --frozen-lockfile
-          rm -rf .yarncache
-          yarn cache clean
-      - name: Run lintings
-        run: "yarn lint"
+          node-version: '16.x'
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile --legacy-peer-deps
+      - name: Increment patch version
+        working-directory: ./
+        run: npm version minor --legacy-peer-deps
+      - name: Prepare build
+        run: yarn run build 
+          
+          
+          
+          
+# name: Publish AA-Bundler to NPM
+# on:
+#   push:
+#     branches:
+#       - develop
+#     paths:
+#       # only on change
+#       - 'packages/boba/bundler_sdk/**/*'
+#       - 'packages/boba/bundler_utils/**/*'
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '16.x'
+#           registry-url: 'https://registry.npmjs.org'
+#       - name: Install dependencies and build 🔧
+#         run: yarn install --frozen-lockfile --legacy-peer-deps && yarn run build
+#       - name: Increment patch version
+#         working-directory: ./packages/boba/bundler_sdk
+#         run: npm version minor --legacy-peer-deps
+#       - name: Publish package on NPM 📦
+#         working-directory: ./packages/boba/bundler_sdk
+#         run: npm publish --access public
+#         env:
+#           NODE_AUTH_TOKEN: ${{ secrets.NPM_BOBA_FOUNDATION }}
