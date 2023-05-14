@@ -20,9 +20,6 @@ jobs:
           node-version: '16.x'
       - name: Install Dependencies
         run: yarn install --frozen-lockfile --legacy-peer-deps
-      - name: Increment patch version
-        working-directory: ./
-        run: npm version minor --legacy-peer-deps
       - name: Prepare build
         run: yarn run build 
           
