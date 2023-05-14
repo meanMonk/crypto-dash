@@ -6,7 +6,7 @@ import arrowUp from 'assets/arrow-up.svg';
 
 import {
   Small, SubHeading, SubTitle, Title,
-  Media, Content, Column, Line, Row, Icon
+  Media, Content, Column, Line, Icon
 } from 'components';
 import { useAppSelector } from 'app/hooks';
 import { selectCoinDetail } from 'reedux/slices/coin.slice';
